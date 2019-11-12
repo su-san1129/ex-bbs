@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<p>
+		<strong>掲示板アプリケーション</strong>
+	</p>
+	<form th:action="@{/post}" th:object="${articleForm}">
+		<div class="form-group">
+			<div th:errors="*{name}" style="color: red"></div>
+			<label for="name">投稿者名：</label> <input type="text" id="name"
+				th:field="*{name}" class="form-control">
+		</div>
+		<div class="form-group">
+			<label th:errors="*{content}" style="color: red"></label> <label
+				for="content">投稿内容：</label><br>
+			<textarea cols="50" rows="5" id="content" th:field="*{content}"
+				class="form-control"></textarea>
+		</div>
+		<button class="form-control button">記事投稿</button>
+	</form>
+	<hr>
+	<div th:each="article:${articleList}">
+		<div>
+			投稿ID：<span th:text="${article.id}"></span>
+		</div>
+		<div>
+			投稿者名：<span th:text="${article.name}"></span>
+		</div>
+		<div>
+			投稿内容：<span th:text="${article.content}"></span>
+		</div>
+		<a th:href="@{'/delete?id='+${article.id} }"><button>記事削除</button></a>
+		<div th:each="comment:${article.comments}">
+			ID:<span th:text="${comment.id}"></span><br> 名前:<span
+				th:text="${comment.name}"></span><br> コメント:<span
+				th:text="${comment.content}"></span><br>
+		  <a th:href="@{'/delete?id='+${comment.id} }"><button>コメント削除</button></a>
+		</div>
+		<form th:action="@{/comment}" th:object="${commentForm}">
+			<div class="form-group">
+				<div th:errors="*{name}" style="color: red"></div>
+				<label for="name">投稿者名：</label> <input type="text" id="name"
+					th:field="*{name}" class="form-control">
+			</div>
+			<div class="form-group">
+				<label th:errors="*{content}" style="color: red"></label> <label
+					for="content">投稿内容：</label><br>
+				<textarea cols="50" rows="5" id="content" th:field="*{content}"
+					class="form-control"></textarea>
+			</div>
+			<input type="hidden" th:value="${article.id}" name="articleId">
+			<button class="form-control button">コメント投稿</button>
+		</form>
+		<hr>
+	</div>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>
