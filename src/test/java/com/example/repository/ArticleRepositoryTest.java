@@ -66,7 +66,7 @@ public class ArticleRepositoryTest {
 	@After
 	public void tearDown() throws Exception {
 		System.out.println("deleteのテストを開始します。");
-		articleRepository.deleteById(6);
+		articleRepository.deleteArticleWithCommentsById(6);
 		System.out.println("deleteのテストを終了します。");
 	}
 

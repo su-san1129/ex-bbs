@@ -13,7 +13,8 @@ import org.springframework.stereotype.Repository;
 import com.example.domain.Comment;
 
 /**
- * コメントを操作するリポジトリ
+ * コメントを操作するリポジトリ.
+ * 
  * @author takahiro.suzuki
  *
  */
@@ -34,8 +35,6 @@ public class CommentRepository {
 		return comment;
 	};
 	
-	
-	
 	/**
 	 * コメントを新規投稿する.
 	 * 
@@ -55,8 +54,8 @@ public class CommentRepository {
 	public List<Comment> findByArticleId(Integer id) {
 		String sql = "SELECT id, name, content FROM comments WHERE article_id = :articleId;";
 		SqlParameterSource param = new MapSqlParameterSource().addValue("articleId", id);
-		List<Comment> articleComments = template.query(sql, param, COMMENT_ROW_MAPPER);
-		return articleComments;
+		List<Comment> commentList = template.query(sql, param, COMMENT_ROW_MAPPER);
+		return commentList;
 	}
 	
 	public void deleteById(Integer id) {
@@ -64,7 +63,4 @@ public class CommentRepository {
 		SqlParameterSource param = new MapSqlParameterSource().addValue("articleId", id);
 		template.update(sql, param);
 	}
-	
-
-
 }

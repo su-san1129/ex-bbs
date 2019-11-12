@@ -45,8 +45,8 @@ public class ArticleService {
 	 * 
 	 * @param id 指定した記事のID
 	 */
-	public void deleteByIdArticle(Integer id) {
-		articleRepository.deleteById(id);
+	public void deleteByIdArticleAndComments(Integer id) {
+		articleRepository.deleteArticleWithCommentsById(id);
 		System.out.println("ID:" + id + "の削除が完了しました。");
 	}
 	

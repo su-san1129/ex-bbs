@@ -90,8 +90,7 @@ public class ArticleController {
 	@RequestMapping("/delete")
 	public String deleteArticle(Integer id) {
 		System.out.println("debug:"+id);
-		commentService.deleteByIdCommets(id);
-		articleService.deleteByIdArticle(id);
+		articleService.deleteByIdArticleAndComments(id);
 		return "redirect:/";
 	}
 	
@@ -105,10 +104,14 @@ public class ArticleController {
 	 * @return コメントを投稿後、記事一覧ページに戻る
 	 */
 	@RequestMapping("/comment")
-	public String articleComment(
+	public String postComment(
 			@Validated CommentForm form
 			, BindingResult result
-			, Comment comment) {
+			, Comment comment
+			, Model model) {
+		if(result.hasErrors()) {
+			return index(model);
+		}
 		BeanUtils.copyProperties(form, comment);
 		commentService.insertComment(comment);
 		return "redirect:/";

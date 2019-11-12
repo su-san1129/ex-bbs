@@ -71,34 +71,6 @@ public class ArticleRepository {
 				commentList.add(comment);
 			}
 			previousId = rs.getInt("id");
-			//コメントがなくても毎回newされてしまう。
-			
-//			if( previousId == rs.getInt("id") ) {
-//		    	Comment comment = new Comment();
-//				comment.setId(rs.getInt("com_id"));
-//				comment.setName(rs.getString("com_name"));
-//				comment.setContent(rs.getString("com_content"));
-//				comment.setArticleId(rs.getInt("article_id"));
-//				nowArticle.getComments().add(comment);
-//				previousId = rs.getInt("id");
-//			} else {	
-//		    	Article article = new Article();
-//		    	Comment comment = new Comment();
-//		    	List<Comment> commentList = new ArrayList<>();
-//		    	article.setId(rs.getInt("id"));
-//		    	article.setName(rs.getString("name"));
-//		    	article.setContent(rs.getString("content"));
-//		    	comment.setId(rs.getInt("com_id"));
-//		    	comment.setName(rs.getString("com_name"));
-//		    	comment.setContent(rs.getString("com_content"));
-//		    	comment.setArticleId(rs.getInt("article_id"));
-//			    commentList.add(comment);
-//		    	article.setComments(commentList);			
-//		    	articleList.add(article);
-//		    	nowArticle = article;
-//		    	previousId = article.getId();
-//		    	System.out.println("debugPreviousId:" + previousId);
-//			}
 		}
 		return articleList;
 			
@@ -128,22 +100,30 @@ public class ArticleRepository {
 	}
 
 	/**
-	 * 記事を削除する.
+	 * 記事とコメントを一括削除する.
 	 * 
 	 * @param id 記事ID
 	 */
-	public void deleteById(Integer id) {
-		String sql = "DELETE FROM articles WHERE id = :id;";
+	public void deleteArticleWithCommentsById(Integer id) {
+		String sql = "WITH deleted AS (DELETE FROM articles WHERE id = :id RETURNING id) "
+				+ "DELETE FROM comments WHERE article_id IN (SELECT id FROM deleted)";
 		SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
 		template.update(sql, param);
 	}
 
 	public List<Article> findAll2() {
-		String sql = "SELECT a.id AS id, a.name AS name, a.content AS content, com.id AS com_id, com.name AS com_name, com.content AS com_content, article_id FROM articles a LEFT OUTER JOIN comments com ON a.id = com.article_id ORDER BY id DESC;";
-//		sql.append("SELECT a.id AS id, a.name AS name, a.content AS content, com.id AS com_id, ");
-//		sql.append("com.name AS com_name, com.content AS com_content, article_id FROM articles a ");
-//		sql.append("INNER JOIN comments com ON a.id = com.article_id;");
-		System.out.println("=====================これ呼ばれてる？？？");
+		String sql = "SELECT "
+				+ "a.id AS id"
+				+ ", a.name AS name"
+				+ ", a.content AS content"
+				+ ", com.id AS com_id"
+				+ ", com.name AS com_name"
+				+ ", com.content AS com_content"
+				+ ", article_id "
+				+ "FROM articles a "
+				+ "LEFT OUTER JOIN "
+				+ "comments com ON a.id = com.article_id "
+				+ "ORDER BY id DESC;";
 		List<Article> articles = template.query(sql, ARTICLE_EXTRA_SET);
 		return articles;
 	}
