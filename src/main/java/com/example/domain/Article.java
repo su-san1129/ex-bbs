@@ -19,6 +19,13 @@ public class Article {
 	/** コメントリスト */
 	private List<Comment> commentList;
 	
+	
+	
+	
+	@Override
+	public String toString() {
+		return "Article [id=" + id + ", name=" + name + ", content=" + content + ", commentList=" + commentList + "]";
+	}
 	public List<Comment> getComments() {
 		return commentList;
 	}

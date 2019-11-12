@@ -63,5 +63,9 @@ public class ArticleService {
 		}
 		return articles;
 	}
+	
+	public List<Article> articleFindAll(){
+		return articleRepository.findAll2();
+	}
 
 }

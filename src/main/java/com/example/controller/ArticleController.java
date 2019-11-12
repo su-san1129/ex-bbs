@@ -19,7 +19,7 @@ import com.example.service.ArticleService;
 import com.example.service.CommentService;
 
 /**
- * 記事を操作するコントローラー
+ * 記事を操作するコントローラー.
  * 
  * @author takahiro.suzuki
  *
@@ -52,7 +52,8 @@ public class ArticleController {
 	 */
 	@RequestMapping("")
 	public String index(Model model) {
-		List<Article> articleList = articleService.articleFindAllWithComments();
+		List<Article> articleList = articleService.articleFindAll();
+		System.out.println(articleList);
 		model.addAttribute("articleList", articleList);
 		return "bbs-index";
 	}

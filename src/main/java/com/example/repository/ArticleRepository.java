@@ -24,7 +24,6 @@ import com.example.domain.Comment;
 @Repository
 public class ArticleRepository {
 
-
 	@Autowired
 	private NamedParameterJdbcTemplate template;
 
@@ -39,8 +38,7 @@ public class ArticleRepository {
 		article.setContent(rs.getString("content"));
 		return article;
 	};
-	
-	
+
 	/*
 	 * ResultSetExtractorを使用すると、検索結果まるごとのリザルトセットをもらうことができる。
 	 * 
@@ -48,47 +46,62 @@ public class ArticleRepository {
 	 */
 	private final ResultSetExtractor<List<Article>> ARTICLE_EXTRA_SET = (rs) -> {
 
-		Article article = new Article();
-		Comment comment = new Comment();
-		List<Comment> commentList = new ArrayList<>();
+		Integer previousId = 0;
 		List<Article> articleList = new ArrayList<>();
+		
+		List<Comment> commentList = null;
+
 		while(rs.next()) {
-			if(rs.previous()) {
-				rs.previous();
-				Integer previousId = rs.getInt("id");
-				rs.next();
-				if( previousId == rs.getInt("id") ) {
-					comment.setId(rs.getInt("com_id"));
-					comment.setName(rs.getString("com_name"));
-					comment.setContent(rs.getString("com_content"));
-					comment.setArticleId(rs.getInt("article_id"));
-					commentList.add(comment);
-					
-				} else {
-					article.setId(rs.getInt("id"));
-					article.setName(rs.getString("name"));
-					article.setContent(rs.getString("content"));
-					comment.setId(rs.getInt("com_id"));
-					comment.setName(rs.getString("com_name"));
-					comment.setContent(rs.getString("com_content"));
-					comment.setArticleId(rs.getInt("article_id"));
-					commentList.add(comment);
-					article.setComments(commentList);			
-					articleList.add(article);
-				}
+			
+			if( previousId != rs.getInt("id") ) {
+				Article article = new Article();
+				article.setId(rs.getInt("id"));
+				article.setName(rs.getString("name"));
+				article.setContent(rs.getString("content"));
+				commentList = new ArrayList<>();
+				article.setComments(commentList);			
+				articleList.add(article);
 			}
-			article.setId(rs.getInt("id"));
-			article.setName(rs.getString("name"));
-			article.setContent(rs.getString("content"));
-			comment.setId(rs.getInt("com_id"));
-			comment.setName(rs.getString("com_name"));
-			comment.setContent(rs.getString("com_content"));
-			comment.setArticleId(rs.getInt("article_id"));
-			commentList.add(comment);
-			article.setComments(commentList);
-			articleList.add(article);
+			if( rs.getInt("com_id") != 0 ) {
+				Comment comment = new Comment();
+				comment.setId(rs.getInt("com_id"));
+				comment.setName(rs.getString("com_name"));
+				comment.setContent(rs.getString("com_content"));
+				comment.setArticleId(rs.getInt("article_id"));
+				commentList.add(comment);
+			}
+			previousId = rs.getInt("id");
+			//コメントがなくても毎回newされてしまう。
+			
+//			if( previousId == rs.getInt("id") ) {
+//		    	Comment comment = new Comment();
+//				comment.setId(rs.getInt("com_id"));
+//				comment.setName(rs.getString("com_name"));
+//				comment.setContent(rs.getString("com_content"));
+//				comment.setArticleId(rs.getInt("article_id"));
+//				nowArticle.getComments().add(comment);
+//				previousId = rs.getInt("id");
+//			} else {	
+//		    	Article article = new Article();
+//		    	Comment comment = new Comment();
+//		    	List<Comment> commentList = new ArrayList<>();
+//		    	article.setId(rs.getInt("id"));
+//		    	article.setName(rs.getString("name"));
+//		    	article.setContent(rs.getString("content"));
+//		    	comment.setId(rs.getInt("com_id"));
+//		    	comment.setName(rs.getString("com_name"));
+//		    	comment.setContent(rs.getString("com_content"));
+//		    	comment.setArticleId(rs.getInt("article_id"));
+//			    commentList.add(comment);
+//		    	article.setComments(commentList);			
+//		    	articleList.add(article);
+//		    	nowArticle = article;
+//		    	previousId = article.getId();
+//		    	System.out.println("debugPreviousId:" + previousId);
+//			}
 		}
 		return articleList;
+			
 	};
 
 	/**
@@ -99,9 +112,8 @@ public class ArticleRepository {
 	 * @return 全件取得された記事。もしなければ0件を返す。
 	 */
 	public List<Article> findAll() {
-		String sql = "SELECT id, name, content FROM articles ORDER BY id DESC;";
-		List<Article> articleList = template.query(sql, ARTICLE_ROW_MAPPER);
-		return articleList;
+	String sql = "SELECT id, name, content FROM articles ORDER BY id DESC;";
+	List<Article> articleList = template.query(sql, ARTICLE_ROW_MAPPER);return articleList;
 	}
 
 	/**
@@ -127,13 +139,13 @@ public class ArticleRepository {
 	}
 
 	public List<Article> findAll2() {
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT a.id AS id, a.name AS name, a.content AS content, com.id AS com_id, ");
-		sql.append("com.name AS com_name, com.content AS com_content, article_id FROM articles a ");
-		sql.append("INNER JOIN comments com ON a.id = com.article_id;");
-		List<Article> articles = template.query(sql.toString(), ARTICLE_EXTRA_SET);
+		String sql = "SELECT a.id AS id, a.name AS name, a.content AS content, com.id AS com_id, com.name AS com_name, com.content AS com_content, article_id FROM articles a LEFT OUTER JOIN comments com ON a.id = com.article_id ORDER BY id DESC;";
+//		sql.append("SELECT a.id AS id, a.name AS name, a.content AS content, com.id AS com_id, ");
+//		sql.append("com.name AS com_name, com.content AS com_content, article_id FROM articles a ");
+//		sql.append("INNER JOIN comments com ON a.id = com.article_id;");
+		System.out.println("=====================これ呼ばれてる？？？");
+		List<Article> articles = template.query(sql, ARTICLE_EXTRA_SET);
 		return articles;
-
 	}
 
 }
