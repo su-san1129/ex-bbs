@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.domain.Article;
+import com.example.domain.Comment;
 import com.example.repository.ArticleRepository;
+import com.example.repository.CommentRepository;
 
 @Service
 @Transactional
@@ -15,6 +17,9 @@ public class ArticleService {
 	
 	@Autowired
 	private ArticleRepository articleRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
 	
 	/**
 	 * 記事を全件検索します.
@@ -43,6 +48,20 @@ public class ArticleService {
 	public void deleteByIdArticle(Integer id) {
 		articleRepository.deleteById(id);
 		System.out.println("ID:" + id + "の削除が完了しました。");
+	}
+	
+	/**
+	 * 記事を全件検索し、article_idに紐づいたcommentを付与する.
+	 * 
+	 * @return コメントのArrayListをセットした記事一覧
+	 */
+	public List<Article> articleFindAllWithComments() {
+		List<Article> articles = articleRepository.findAll();
+		for (Article article : articles) {
+			List<Comment> articleComments = commentRepository.findByArticleId(article.getId());
+			article.setComments(articleComments);
+		}
+		return articles;
 	}
 
 }

@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import com.example.domain.Article;
 import com.example.domain.Comment;
 
 /**
@@ -24,9 +23,6 @@ public class CommentRepository {
 	@Autowired
 	private NamedParameterJdbcTemplate template;
 	
-	@Autowired
-	private ArticleRepository articleRepository;
-	
 	/**
 	 * コメントオブジェクトを生成するRow_mapper
 	 */
@@ -38,19 +34,7 @@ public class CommentRepository {
 		return comment;
 	};
 	
-	/**
-	 * 記事を全件検索し、article_idに紐づいたcommentを付与する.
-	 * 
-	 * @return コメントのArrayListをセットした記事一覧
-	 */
-	public List<Article> articleFindAllWithComments() {
-		List<Article> articles = articleRepository.findAll();
-		for (Article article : articles) {
-			List<Comment> articleComments = findByArticleId(article.getId());
-			article.setComments(articleComments);
-		}
-		return articles;
-	}
+	
 	
 	/**
 	 * コメントを新規投稿する.
@@ -76,8 +60,8 @@ public class CommentRepository {
 	}
 	
 	public void deleteById(Integer id) {
-		String sql = "DELETE FROM commets WHERE id = :id;";
-		SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
+		String sql = "DELETE FROM comments WHERE article_id = :articleId;";
+		SqlParameterSource param = new MapSqlParameterSource().addValue("articleId", id);
 		template.update(sql, param);
 	}
 	

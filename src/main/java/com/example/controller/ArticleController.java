@@ -52,7 +52,7 @@ public class ArticleController {
 	 */
 	@RequestMapping("")
 	public String index(Model model) {
-		List<Article> articleList = commentService.findAllArticleWithComments();
+		List<Article> articleList = articleService.articleFindAllWithComments();
 		model.addAttribute("articleList", articleList);
 		return "bbs-index";
 	}
@@ -87,24 +87,13 @@ public class ArticleController {
 	 * @return 削除後に投稿ページに戻る
 	 */
 	@RequestMapping("/delete")
-	public String deletePostById(Integer id) {
+	public String deleteArticle(Integer id) {
 		System.out.println("debug:"+id);
+		commentService.deleteByIdCommets(id);
 		articleService.deleteByIdArticle(id);
 		return "redirect:/";
 	}
 	
-	/**
-	 * リクエストパラメーターで受け取った記事を削除します.
-	 * 
-	 * @param id リクエストパラメーターで受け取ったID
-	 * @return 削除後に投稿ページに戻る
-	 */
-	@RequestMapping("/delete-comment")
-	public String deleteCommentById(Integer id) {
-		System.out.println("debug:"+id);
-		commentService.deleteByIdCommets(id);;
-		return "redirect:/";
-	}
 	
 	/**
 	 * 記事IDに紐づいたコメントを投稿します.

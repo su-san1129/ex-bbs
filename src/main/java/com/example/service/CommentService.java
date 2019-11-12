@@ -1,12 +1,10 @@
 package com.example.service;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.domain.Article;
 import com.example.domain.Comment;
 import com.example.repository.CommentRepository;
 
@@ -32,14 +30,6 @@ public class CommentService {
 		commentRepository.insert(comment);
 	}
 	
-	/**
-	 * 記事にコメントを追加したオブジェクトを返します.
-	 * 
-	 * @return コメントを追加した記事オブジェクト
-	 */
-	public List<Article> findAllArticleWithComments(){
-		return commentRepository.articleFindAllWithComments();
-	}
 	
 	/**
 	 * 指定したIDのコメントを削除します.

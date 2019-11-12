@@ -38,7 +38,6 @@
 			ID:<span th:text="${comment.id}"></span><br> 名前:<span
 				th:text="${comment.name}"></span><br> コメント:<span
 				th:text="${comment.content}"></span><br>
-		  <a th:href="@{'/delete?id='+${comment.id} }"><button>コメント削除</button></a>
 		</div>
 		<form th:action="@{/comment}" th:object="${commentForm}">
 			<div class="form-group">
